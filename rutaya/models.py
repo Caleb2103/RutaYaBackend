@@ -73,6 +73,49 @@ class TravelAvailability(models.Model):
     def __str__(self):
         return f"{self.user.email} - {self.date}"
 
+class TourPackage(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='tour_packages'
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    start_date = models.CharField(max_length=255)  # Cambiado a CharField
+    days = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    is_paid = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['start_date']  # Nota: el ordering alfabético podría no ser cronológico
+        db_table = 'tour_packages'
+        verbose_name = 'Tour Package'
+        verbose_name_plural = 'Tour Packages'
+
+    def __str__(self):
+        return f"{self.title} ({self.start_date}) - {self.user.email}"
+
+
+class ItineraryItem(models.Model):
+    tour_package = models.ForeignKey(
+        TourPackage,
+        on_delete=models.CASCADE,
+        related_name='itinerary'
+    )
+    datetime = models.CharField(max_length=255)  # Cambiado a CharField
+    description = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']  # Mantenemos el orden por 'order' que es numérico
+        db_table = 'itinerary_items'
+        verbose_name = 'Itinerary Item'
+        verbose_name_plural = 'Itinerary Items'
+
+    def __str__(self):
+        return f"{self.tour_package.title} - {self.datetime}"
+
 class Destination(models.Model):
     name = models.CharField(max_length=200)
     location = models.CharField(max_length=100)
@@ -124,3 +167,56 @@ class UserPreferences(models.Model):
 
     def __str__(self):
         return f"Preferencias de {self.user.email}"
+
+# Agregar estos modelos a tu archivo models.py existente
+
+class DestinationRate(models.Model):
+    destination = models.ForeignKey(
+        Destination,
+        on_delete=models.CASCADE,
+        related_name='rates'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='destination_rates'
+    )
+    stars = models.IntegerField()
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.CharField(max_length=255)
+
+    class Meta:
+        unique_together = ('destination', 'user')
+        ordering = ['-id']
+        db_table = 'destination_rates'
+        verbose_name = 'Destination Rate'
+        verbose_name_plural = 'Destination Rates'
+
+    def __str__(self):
+        return f"{self.destination.name} - {self.stars} estrellas por {self.user.email}"
+
+
+class TourPackageRate(models.Model):
+    tour_package = models.ForeignKey(
+        TourPackage,
+        on_delete=models.CASCADE,
+        related_name='rates'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='tour_package_rates'
+    )
+    stars = models.IntegerField()
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.CharField(max_length=255)
+
+    class Meta:
+        unique_together = ('tour_package', 'user')
+        ordering = ['-id']
+        db_table = 'tour_package_rates'
+        verbose_name = 'Tour Package Rate'
+        verbose_name_plural = 'Tour Package Rates'
+
+    def __str__(self):
+        return f"{self.tour_package.title} - {self.stars} estrellas por {self.user.email}"

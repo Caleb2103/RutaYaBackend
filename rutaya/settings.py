@@ -96,10 +96,10 @@ WSGI_APPLICATION = 'rutaya.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'rutasyadb',
+        'NAME': 'rutasyadb_fc2r',
         'USER': 'rutasyadb_user',
-        'PASSWORD': 'CPc36Hc797f31hEbHTlt3iVzIjwqY7D7',
-        'HOST': 'dpg-d16van2dbo4c73ct87kg-a.oregon-postgres.render.com',
+        'PASSWORD': 'SIBN30PTCEZESXDFLEGERjZx45MmdZM1',
+        'HOST': 'dpg-d1ko59vdiees73eq4u4g-a.oregon-postgres.render.com',
         'PORT': '5432'
     }
 }
